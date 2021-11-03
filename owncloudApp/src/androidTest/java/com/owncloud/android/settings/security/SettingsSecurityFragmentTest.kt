@@ -58,12 +58,14 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 
+@Ignore
 class SettingsSecurityFragmentTest {
 
     private lateinit var fragmentScenario: FragmentScenario<SettingsSecurityFragment>
