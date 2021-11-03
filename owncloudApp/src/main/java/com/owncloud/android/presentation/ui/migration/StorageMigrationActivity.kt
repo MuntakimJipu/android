@@ -24,6 +24,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.owncloud.android.BuildConfig
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.data.preferences.datasources.implementation.SharedPreferencesProviderImpl
@@ -87,7 +88,7 @@ class StorageMigrationActivity : AppCompatActivity() {
         }
 
         fun runIfNeeded(context: Context) {
-            if (context is StorageMigrationActivity) {
+            if (context is StorageMigrationActivity || BuildConfig.DEBUG) {
                 return
             }
             if (shouldShow(context)) {
