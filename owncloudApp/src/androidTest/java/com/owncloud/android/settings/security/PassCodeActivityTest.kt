@@ -51,12 +51,14 @@ import io.mockk.mockk
 import nthChildOf
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Ignore
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import withChildViewCount
 
+@Ignore
 class PassCodeActivityTest {
 
     @Rule
