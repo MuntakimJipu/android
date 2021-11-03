@@ -35,9 +35,11 @@ import com.owncloud.android.presentation.ui.settings.PrivacyPolicyActivity
 import com.owncloud.android.utils.matchers.isDisplayed
 import org.hamcrest.Matchers.containsString
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+@Ignore
 class PrivacyPolicyActivityTest {
 
     @Rule
