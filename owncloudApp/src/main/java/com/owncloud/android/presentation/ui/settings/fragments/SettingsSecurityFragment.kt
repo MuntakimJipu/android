@@ -34,9 +34,9 @@ import androidx.preference.PreferenceScreen
 import com.owncloud.android.R
 import com.owncloud.android.authentication.BiometricManager
 import com.owncloud.android.extensions.showMessageInSnackbar
+import com.owncloud.android.presentation.ui.security.PassCodeActivity
 import com.owncloud.android.presentation.viewmodels.settings.SettingsSecurityViewModel
 import com.owncloud.android.ui.activity.BiometricActivity
-import com.owncloud.android.presentation.ui.security.PassCodeActivity
 import com.owncloud.android.ui.activity.PatternLockActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -112,8 +112,11 @@ class SettingsSecurityFragment : PreferenceFragmentCompat() {
         prefBiometric = findPreference(BiometricActivity.PREFERENCE_SET_BIOMETRIC)
         prefTouchesWithOtherVisibleWindows = findPreference(PREFERENCE_TOUCHES_WITH_OTHER_VISIBLE_WINDOWS)
 
+        prefPasscode?.isVisible = !securityViewModel.isSecurityEnforcedEnabled(requireContext())
+        prefPattern?.isVisible = !securityViewModel.isSecurityEnforcedEnabled(requireContext())
+
         // Passcode lock
-        prefPasscode?.setOnPreferenceChangeListener { preference: Preference?, newValue: Any ->
+        prefPasscode?.setOnPreferenceChangeListener { _: Preference?, newValue: Any ->
             if (securityViewModel.isPatternSet()) {
                 showMessageInSnackbar(getString(R.string.pattern_already_set))
             } else {

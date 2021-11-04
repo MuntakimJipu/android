@@ -56,17 +56,20 @@ import com.owncloud.android.BuildConfig
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.BiometricManager
-import com.owncloud.android.presentation.ui.security.PassCodeManager
 import com.owncloud.android.authentication.PatternManager
 import com.owncloud.android.databinding.ActivityMainBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
+import com.owncloud.android.extensions.checkPasscodeEnforced
+import com.owncloud.android.extensions.manageOptionLockSelected
 import com.owncloud.android.extensions.showMessageInSnackbar
 import com.owncloud.android.files.services.FileDownloader
 import com.owncloud.android.files.services.FileDownloader.FileDownloaderBinder
 import com.owncloud.android.files.services.FileUploader
 import com.owncloud.android.files.services.FileUploader.FileUploaderBinder
 import com.owncloud.android.files.services.TransferRequester
+import com.owncloud.android.interfaces.ISecurityEnforced
+import com.owncloud.android.interfaces.LockType
 import com.owncloud.android.lib.common.authentication.OwnCloudBearerCredentials
 import com.owncloud.android.lib.common.operations.RemoteOperation
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
@@ -80,6 +83,7 @@ import com.owncloud.android.operations.RemoveFileOperation
 import com.owncloud.android.operations.RenameFileOperation
 import com.owncloud.android.operations.SynchronizeFileOperation
 import com.owncloud.android.operations.UploadFileOperation
+import com.owncloud.android.presentation.ui.security.PassCodeManager
 import com.owncloud.android.syncadapter.FileSyncAdapter
 import com.owncloud.android.ui.errorhandling.ErrorMessageAdapter
 import com.owncloud.android.ui.fragment.FileDetailFragment
@@ -112,7 +116,7 @@ import kotlin.coroutines.CoroutineContext
  */
 
 class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEnforceableRefreshListener,
-    CoroutineScope {
+    CoroutineScope, ISecurityEnforced {
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
@@ -154,6 +158,8 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
         Timber.v("onCreate() start")
 
         super.onCreate(savedInstanceState) // this calls onAccountChanged() when ownCloud Account is valid
+
+        checkPasscodeEnforced(this)
 
         localBroadcastManager = LocalBroadcastManager.getInstance(this)
 
@@ -1691,6 +1697,10 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
         FileListOption.SHARED_BY_LINK -> R.id.nav_shared_by_link_files
         FileListOption.AV_OFFLINE -> R.id.nav_available_offline_files
         else -> R.id.nav_all_files
+    }
+
+    override fun optionLockSelected(type: LockType) {
+        manageOptionLockSelected(type)
     }
 
     companion object {
