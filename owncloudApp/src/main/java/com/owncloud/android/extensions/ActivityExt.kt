@@ -265,7 +265,7 @@ fun Activity.manageOptionLockSelected(type: LockType) {
             action = PassCodeActivity.ACTION_REQUEST_WITH_RESULT
         })
         LockType.PATTERN -> startActivity(Intent(this, PatternLockActivity::class.java).apply {
-            action = PassCodeActivity.ACTION_REQUEST_WITH_RESULT
+            action = PatternLockActivity.ACTION_REQUEST_WITH_RESULT
         })
     }
 }
