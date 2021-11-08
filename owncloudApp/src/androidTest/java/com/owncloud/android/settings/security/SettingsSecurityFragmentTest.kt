@@ -38,13 +38,13 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.owncloud.android.R
 import com.owncloud.android.authentication.BiometricManager
 import com.owncloud.android.presentation.UIResult
-import com.owncloud.android.presentation.ui.settings.fragments.SettingsSecurityFragment
-import com.owncloud.android.presentation.viewmodels.settings.SettingsSecurityViewModel
-import com.owncloud.android.ui.activity.BiometricActivity
 import com.owncloud.android.presentation.ui.security.PassCodeActivity
+import com.owncloud.android.presentation.ui.settings.fragments.SettingsSecurityFragment
 import com.owncloud.android.presentation.viewmodels.security.PassCodeViewModel
+import com.owncloud.android.presentation.viewmodels.settings.SettingsSecurityViewModel
 import com.owncloud.android.testutil.security.OC_PASSCODE_4_DIGITS
 import com.owncloud.android.testutil.security.OC_PATTERN
+import com.owncloud.android.ui.activity.BiometricActivity
 import com.owncloud.android.ui.activity.PatternLockActivity
 import com.owncloud.android.utils.matchers.verifyPreference
 import com.owncloud.android.utils.mockIntent
@@ -77,7 +77,6 @@ class SettingsSecurityFragmentTest {
 
     private lateinit var securityViewModel: SettingsSecurityViewModel
     private lateinit var passCodeViewModel: PassCodeViewModel
-    private lateinit var settingsSecurityViewModel: SettingsSecurityViewModel
     private lateinit var context: Context
 
     @Before
@@ -85,7 +84,6 @@ class SettingsSecurityFragmentTest {
         context = InstrumentationRegistry.getInstrumentation().targetContext
         securityViewModel = mockk(relaxUnitFun = true)
         passCodeViewModel = mockk(relaxUnitFun = true)
-        settingsSecurityViewModel = mockk(relaxUnitFun = true)
         mockkStatic(BiometricManager::class)
         biometricManager = mockk(relaxUnitFun = true)
 
@@ -109,7 +107,7 @@ class SettingsSecurityFragmentTest {
 
         every { passCodeViewModel.getPassCode() } returns OC_PASSCODE_4_DIGITS
         every { passCodeViewModel.getNumberOfPassCodeDigits() } returns 4
-        every { settingsSecurityViewModel.isSecurityEnforcedEnabled() } returns false
+        every { securityViewModel.isSecurityEnforcedEnabled() } returns false
 
         Intents.init()
     }
@@ -426,6 +424,34 @@ class SettingsSecurityFragmentTest {
         onView(withText(R.string.common_yes)).perform(click())
         onView(withText(R.string.prefs_touches_with_other_visible_windows)).perform(click())
         assertFalse(prefTouchesWithOtherVisibleWindows.isChecked)
+    }
+
+    @Test
+    fun passcodeLockNotVisible() {
+        every { securityViewModel.isSecurityEnforcedEnabled() } returns true
+        launchTest()
+        assertFalse(prefPasscode.isVisible)
+    }
+
+    @Test
+    fun patternLockNotVisible() {
+        every { securityViewModel.isSecurityEnforcedEnabled() } returns true
+        launchTest()
+        assertFalse(prefPattern.isVisible)
+    }
+
+    @Test
+    fun passcodeLockVisible() {
+        every { securityViewModel.isSecurityEnforcedEnabled() } returns false
+        launchTest()
+        assertTrue(prefPasscode.isVisible)
+    }
+
+    @Test
+    fun patternLockVisible() {
+        every { securityViewModel.isSecurityEnforcedEnabled() } returns false
+        launchTest()
+        assertTrue(prefPattern.isVisible)
     }
 
     private fun firstEnablePasscode() {
