@@ -77,6 +77,7 @@ class SettingsSecurityFragmentTest {
 
     private lateinit var securityViewModel: SettingsSecurityViewModel
     private lateinit var passCodeViewModel: PassCodeViewModel
+    private lateinit var settingsSecurityViewModel: SettingsSecurityViewModel
     private lateinit var context: Context
 
     @Before
@@ -84,6 +85,7 @@ class SettingsSecurityFragmentTest {
         context = InstrumentationRegistry.getInstrumentation().targetContext
         securityViewModel = mockk(relaxUnitFun = true)
         passCodeViewModel = mockk(relaxUnitFun = true)
+        settingsSecurityViewModel = mockk(relaxUnitFun = true)
         mockkStatic(BiometricManager::class)
         biometricManager = mockk(relaxUnitFun = true)
 
@@ -107,6 +109,7 @@ class SettingsSecurityFragmentTest {
 
         every { passCodeViewModel.getPassCode() } returns OC_PASSCODE_4_DIGITS
         every { passCodeViewModel.getNumberOfPassCodeDigits() } returns 4
+        every { settingsSecurityViewModel.isSecurityEnforcedEnabled() } returns false
 
         Intents.init()
     }
