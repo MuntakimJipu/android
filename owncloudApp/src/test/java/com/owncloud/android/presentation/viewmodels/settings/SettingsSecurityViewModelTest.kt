@@ -33,6 +33,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -206,16 +207,28 @@ class SettingsSecurityViewModelTest : ViewModelTest() {
 
     @Test
     fun `set pref is security enforced enabled - ok - true`() {
-        every { securityViewModel.isSecurityEnforcedEnabled() } returns true
+        every { contextProvider.getBoolean(any()) } returns true
 
-        assertTrue(contextProvider.getBoolean(R.bool.passcode_enforced))
+        securityViewModel.isSecurityEnforcedEnabled().apply {
+            assertEquals(true, this)
+        }
+
+        verify(exactly = 1) {
+            contextProvider.getBoolean(R.bool.passcode_enforced)
+        }
     }
 
     @Test
     fun `set pref is security enforced enabled - ok - false`() {
-        every { securityViewModel.isSecurityEnforcedEnabled() } returns false
+        every { contextProvider.getBoolean(any()) } returns false
 
-        assertFalse(contextProvider.getBoolean(R.bool.passcode_enforced))
+        securityViewModel.isSecurityEnforcedEnabled().apply {
+            assertEquals(false, this)
+        }
+
+        verify(exactly = 1) {
+            contextProvider.getBoolean(R.bool.passcode_enforced)
+        }
     }
 
 }

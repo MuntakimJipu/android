@@ -442,14 +442,12 @@ class SettingsSecurityFragmentTest {
 
     @Test
     fun passcodeLockVisible() {
-        every { securityViewModel.isSecurityEnforcedEnabled() } returns false
         launchTest()
         assertTrue(prefPasscode.isVisible)
     }
 
     @Test
     fun patternLockVisible() {
-        every { securityViewModel.isSecurityEnforcedEnabled() } returns false
         launchTest()
         assertTrue(prefPattern.isVisible)
     }
