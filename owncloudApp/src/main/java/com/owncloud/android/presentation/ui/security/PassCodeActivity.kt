@@ -42,6 +42,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.owncloud.android.BuildConfig
 import com.owncloud.android.R
+import com.owncloud.android.databinding.PasscodelockBinding
 import com.owncloud.android.presentation.viewmodels.security.PassCodeViewModel
 import com.owncloud.android.ui.activity.BaseActivity
 import com.owncloud.android.utils.DocumentProviderUtils.Companion.notifyDocumentProviderRoots
@@ -55,10 +56,9 @@ class PassCodeActivity : BaseActivity() {
     // ViewModel
     private val passCodeViewModel by viewModel<PassCodeViewModel>()
 
-    private lateinit var bCancel: Button
-    private lateinit var passCodeHdr: TextView
-    private lateinit var passCodeHdrExplanation: TextView
-    private lateinit var passCodeError: TextView
+    private var _binding: PasscodelockBinding? = null
+    val binding get() =  _binding!!
+
     private lateinit var passCodeEditTexts: Array<EditText?>
     private lateinit var passCodeDigits: Array<String?>
     private var confirmingPassCode = false
@@ -71,34 +71,30 @@ class PassCodeActivity : BaseActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        _binding = PasscodelockBinding.inflate(layoutInflater)
 
         /// protection against screen recording
         if (!BuildConfig.DEBUG) {
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         } // else, let it go, or taking screenshots & testing will not be possible
 
-        setContentView(R.layout.passcodelock)
-        val passcodeLockLayout = findViewById<LinearLayout>(R.id.passcodeLockLayout)
-        bCancel = findViewById(R.id.cancel)
-        passCodeHdr = findViewById(R.id.header)
-        passCodeHdrExplanation = findViewById(R.id.explanation)
-        passCodeError = findViewById(R.id.error)
+        setContentView(binding.root)
 
         passCodeEditTexts = arrayOfNulls(passCodeViewModel.getPassCode()?.length ?: passCodeViewModel.getNumberOfPassCodeDigits())
         passCodeDigits = arrayOfNulls((passCodeViewModel.getPassCode()?.length ?: passCodeViewModel.getNumberOfPassCodeDigits()))
 
         // Allow or disallow touches with other visible windows
-        passcodeLockLayout.filterTouchesWhenObscured =
+        binding.passcodeLockLayout.filterTouchesWhenObscured =
             PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
-        passCodeHdrExplanation.filterTouchesWhenObscured =
+        binding.explanation.filterTouchesWhenObscured =
             PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
 
         inflatePasscodeTxtLine()
 
         if (ACTION_CHECK == intent.action) {
             /// this is a pass code request; the user has to input the right value
-            passCodeHdr.text = getString(R.string.pass_code_enter_pass_code)
-            passCodeHdrExplanation.visibility = View.INVISIBLE
+            binding.header.text = getString(R.string.pass_code_enter_pass_code)
+            binding.explanation.visibility = View.INVISIBLE
             setCancelButtonEnabled(false) // no option to cancel
         } else if (ACTION_REQUEST_WITH_RESULT == intent.action) {
             if (savedInstanceState != null) {
@@ -110,23 +106,23 @@ class PassCodeActivity : BaseActivity() {
                 requestPassCodeConfirmation()
             } else {
                 if (intent.extras?.getBoolean(EXTRAS_MIGRATION) == true) {
-                    passCodeHdr.text = getString(R.string.pass_code_configure_your_pass_code_migration, passCodeViewModel.getNumberOfPassCodeDigits())
+                    binding.header.text = getString(R.string.pass_code_configure_your_pass_code_migration, passCodeViewModel.getNumberOfPassCodeDigits())
                 } else {
                     /// pass code preference has just been activated in Preferences;
                     // will receive and confirm pass code value
-                    passCodeHdr.text = getString(R.string.pass_code_configure_your_pass_code)
+                    binding.header.text = getString(R.string.pass_code_configure_your_pass_code)
                 }
                 //mPassCodeHdr.setText(R.string.pass_code_enter_pass_code);
                 // TODO choose a header, check iOS
-                passCodeHdrExplanation.visibility = View.VISIBLE
+                binding.explanation.visibility = View.VISIBLE
                 if (intent.extras?.getBoolean(EXTRAS_MIGRATION) == true) setCancelButtonEnabled(false)
                 else setCancelButtonEnabled(true)
             }
         } else if (ACTION_CHECK_WITH_RESULT == intent.action) {
             /// pass code preference has just been disabled in Preferences;
             // will confirm user knows pass code, then remove it
-            passCodeHdr.text = getString(R.string.pass_code_remove_your_pass_code)
-            passCodeHdrExplanation.visibility = View.INVISIBLE
+            binding.header.text = getString(R.string.pass_code_remove_your_pass_code)
+            binding.explanation.visibility = View.INVISIBLE
             setCancelButtonEnabled(true)
         } else {
             throw IllegalArgumentException(R.string.illegal_argument_exception_message.toString() + " ")
@@ -156,12 +152,9 @@ class PassCodeActivity : BaseActivity() {
      * @param enabled       'True' makes the cancel button available, 'false' hides it.
      */
     protected fun setCancelButtonEnabled(enabled: Boolean) {
-        if (enabled) {
-            bCancel.visibility = View.VISIBLE
-            bCancel.setOnClickListener { finish() }
-        } else {
-            bCancel.visibility = View.INVISIBLE
-            bCancel.setOnClickListener(null)
+        binding.cancel.apply {
+            visibility = if(enabled) View.VISIBLE else View.INVISIBLE
+            setOnClickListener { if(enabled) finish() }
         }
     }
 
@@ -212,7 +205,7 @@ class PassCodeActivity : BaseActivity() {
         if (ACTION_CHECK == intent.action) {
             if (passCodeViewModel.checkPassCodeIsValid(passCodeDigits)) {
                 /// pass code accepted in request, user is allowed to access the app
-                passCodeError.visibility = View.INVISIBLE
+                binding.error.visibility = View.INVISIBLE
                 hideSoftKeyboard()
                 val passCode = passCodeViewModel.getPassCode()
                 if (passCode != null && passCode.length < passCodeViewModel.getNumberOfPassCodeDigits()) {
@@ -239,7 +232,7 @@ class PassCodeActivity : BaseActivity() {
                 passCodeViewModel.removePassCode()
                 val resultIntent = Intent()
                 setResult(RESULT_OK, resultIntent)
-                passCodeError.visibility = View.INVISIBLE
+                binding.error.visibility = View.INVISIBLE
                 hideSoftKeyboard()
                 notifyDocumentProviderRoots(applicationContext)
                 finish()
@@ -252,7 +245,7 @@ class PassCodeActivity : BaseActivity() {
         } else if (ACTION_REQUEST_WITH_RESULT == intent.action) {
             // enabling pass code
             if (!confirmingPassCode) {
-                passCodeError.visibility = View.INVISIBLE
+                binding.error.visibility = View.INVISIBLE
                 requestPassCodeConfirmation()
             } else if (confirmPassCode()) {
                 // confirmed: user typed the same pass code twice
@@ -276,10 +269,10 @@ class PassCodeActivity : BaseActivity() {
         explanationVisibility: Int
     ) {
         Arrays.fill(passCodeDigits, null)
-        passCodeError.setText(errorMessage)
-        passCodeError.visibility = View.VISIBLE
-        passCodeHdr.text = headerMessage // TODO check if really needed
-        passCodeHdrExplanation.visibility = explanationVisibility // TODO check if really needed
+        binding.error.setText(errorMessage)
+        binding.error.visibility = View.VISIBLE
+        binding.header.text = headerMessage // TODO check if really needed
+        binding.explanation.visibility = explanationVisibility // TODO check if really needed
         clearBoxes()
     }
 
@@ -289,8 +282,8 @@ class PassCodeActivity : BaseActivity() {
      */
     protected fun requestPassCodeConfirmation() {
         clearBoxes()
-        passCodeHdr.setText(R.string.pass_code_reenter_your_pass_code)
-        passCodeHdrExplanation.visibility = View.INVISIBLE
+        binding.header.setText(R.string.pass_code_reenter_your_pass_code)
+        binding.explanation.visibility = View.INVISIBLE
         confirmingPassCode = true
     }
 
