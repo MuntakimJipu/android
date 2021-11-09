@@ -33,7 +33,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -210,7 +209,7 @@ class SettingsSecurityViewModelTest : ViewModelTest() {
         every { contextProvider.getBoolean(any()) } returns true
 
         securityViewModel.isSecurityEnforcedEnabled().apply {
-            assertEquals(true, this)
+            assertTrue(this)
         }
 
         verify(exactly = 1) {
@@ -223,7 +222,7 @@ class SettingsSecurityViewModelTest : ViewModelTest() {
         every { contextProvider.getBoolean(any()) } returns false
 
         securityViewModel.isSecurityEnforcedEnabled().apply {
-            assertEquals(false, this)
+            assertFalse(this)
         }
 
         verify(exactly = 1) {
