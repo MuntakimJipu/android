@@ -27,29 +27,27 @@
 package com.owncloud.android.presentation.ui.security
 
 import android.content.Context
-import com.owncloud.android.utils.DocumentProviderUtils.Companion.notifyDocumentProviderRoots
-import android.widget.TextView
-import android.widget.EditText
-import android.os.Bundle
-import android.view.WindowManager
-import com.owncloud.android.R
-import android.widget.LinearLayout
-import android.view.View.OnFocusChangeListener
 import android.content.Intent
-import android.text.TextWatcher
+import android.os.Bundle
 import android.text.Editable
+import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
+import android.view.View.OnFocusChangeListener
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
 import com.owncloud.android.BuildConfig
+import com.owncloud.android.R
 import com.owncloud.android.presentation.viewmodels.security.PassCodeViewModel
 import com.owncloud.android.ui.activity.BaseActivity
+import com.owncloud.android.utils.DocumentProviderUtils.Companion.notifyDocumentProviderRoots
 import com.owncloud.android.utils.PreferenceUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.lang.IllegalArgumentException
-import java.lang.StringBuilder
 import java.util.Arrays
 
 class PassCodeActivity : BaseActivity() {
@@ -234,6 +232,7 @@ class PassCodeActivity : BaseActivity() {
                     R.string.pass_code_wrong, getString(R.string.pass_code_enter_pass_code),
                     View.INVISIBLE
                 )
+                passCodeViewModel.setNewAttempt()
             }
         } else if (ACTION_CHECK_WITH_RESULT == intent.action) {
             if (passCodeViewModel.checkPassCodeIsValid(passCodeDigits)) {
@@ -260,7 +259,10 @@ class PassCodeActivity : BaseActivity() {
                 if (intent.extras?.getBoolean(EXTRAS_MIGRATION) == true) passCodeViewModel.setMigrationRequired(false)
                 savePassCodeAndExit()
             } else {
-                val headerMessage = if (intent.extras?.getBoolean(EXTRAS_MIGRATION) == true) getString(R.string.pass_code_configure_your_pass_code_migration, passCodeViewModel.getNumberOfPassCodeDigits())
+                val headerMessage = if (intent.extras?.getBoolean(EXTRAS_MIGRATION) == true) getString(
+                    R.string.pass_code_configure_your_pass_code_migration,
+                    passCodeViewModel.getNumberOfPassCodeDigits()
+                )
                 else getString(R.string.pass_code_configure_your_pass_code)
                 showErrorAndRestart(
                     R.string.pass_code_mismatch, headerMessage, View.VISIBLE
@@ -423,6 +425,7 @@ class PassCodeActivity : BaseActivity() {
         const val PREFERENCE_SET_PASSCODE = "set_pincode"
         const val PREFERENCE_PASSCODE = "PrefPinCode"
         const val PREFERENCE_MIGRATION_REQUIRED = "PrefMigrationRequired"
+        const val PREFERENCE_PASSCODE_ATTEMPTS = "PrefPinCodeAttempts"
 
         // NOTE: This is required to read the legacy pin code format
         const val PREFERENCE_PASSCODE_D = "PrefPinCode"

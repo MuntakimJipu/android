@@ -25,6 +25,7 @@ import com.owncloud.android.R
 import com.owncloud.android.data.preferences.datasources.SharedPreferencesProvider
 import com.owncloud.android.presentation.ui.security.PassCodeActivity
 import com.owncloud.android.providers.ContextProvider
+import timber.log.Timber
 
 class PassCodeViewModel(
     private val preferencesProvider: SharedPreferencesProvider,
@@ -41,6 +42,12 @@ class PassCodeViewModel(
     fun removePassCode() {
         preferencesProvider.removePreference(PassCodeActivity.PREFERENCE_PASSCODE)
         preferencesProvider.putBoolean(PassCodeActivity.PREFERENCE_SET_PASSCODE, false)
+    }
+
+    private fun getNumberOfAttempts() = preferencesProvider.getInt(PassCodeActivity.PREFERENCE_PASSCODE_ATTEMPTS, 0)
+
+    fun setNewAttempt() {
+        preferencesProvider.putInt(PassCodeActivity.PREFERENCE_PASSCODE_ATTEMPTS, getNumberOfAttempts().plus(1))
     }
 
     fun checkPassCodeIsValid(passCodeDigits: Array<String?>): Boolean {
