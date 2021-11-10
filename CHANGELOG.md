@@ -20,6 +20,7 @@ Summary
 * Enhancement - Instant upload only when charging: [#465](https://github.com/owncloud/android/issues/465)
 * Enhancement - Scoped Storage: [#2877](https://github.com/owncloud/android/issues/2877)
 * Enhancement - New Logging Screen 2.0: [#3333](https://github.com/owncloud/android/issues/3333)
+* Enhancement - Respect capability for Avatar support: [#3438](https://github.com/owncloud/android/pull/3438)
 
 Details
 -------
@@ -132,6 +133,14 @@ Details
 
    https://github.com/owncloud/android/issues/3333
    https://github.com/owncloud/android/pull/3408
+
+* Enhancement - Respect capability for Avatar support: [#3438](https://github.com/owncloud/android/pull/3438)
+
+   Previously, the user's avatar did not take into account whether or not it should be loaded. Now,
+   with a new capability it is controlled whether or not it should be uploaded.
+
+   https://github.com/owncloud/android/issues/3285
+   https://github.com/owncloud/android/pull/3438
 
 Changelog for ownCloud Android Client [2.18.3] (2021-10-27)
 =======================================
