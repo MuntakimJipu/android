@@ -136,8 +136,8 @@ Details
 
 * Enhancement - Respect capability for Avatar support: [#3438](https://github.com/owncloud/android/pull/3438)
 
-   Previously, the user's avatar did not take into account whether or not it should be loaded. Now,
-   with a new capability it is controlled whether or not it should be uploaded.
+   Previously, the user's avatar was shown by default. Now, it is shown or not depending on a new
+   capability.
 
    https://github.com/owncloud/android/issues/3285
    https://github.com/owncloud/android/pull/3438
